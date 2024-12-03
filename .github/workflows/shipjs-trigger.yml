@@ -24,8 +24,8 @@ jobs:
             npm install
           fi
       - run: |
-          git config --global user.email "<>"
-          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "py.valentin@gmail.com"
+          git config --global user.name "Val0che"
       - run: npx shipjs trigger
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
