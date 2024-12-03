@@ -1,18 +1,18 @@
 <script lang="ts">
   import type { SearchClient } from "algoliasearch/lite";
+  import type { RouterProps } from "instantsearch.js/es/middlewares";
+  import type { StateMapping, UiState } from "instantsearch.js";
   import InstantSearch, { type InstantSearchOptions } from "instantsearch.js/es/lib/InstantSearch";
-  import { history } from "instantsearch.js/es/lib/routers";
   import { setInstantSearchContext } from "./instantSearchContext";
   import { tick } from "svelte";
   import { getServerContext } from "./getServerState";
   import { page } from "$app/stores";
   import { setIndexContext } from "./indexContext";
-  import { onDestroyClientSide } from "./utils";
-  import { RouterProps } from "instantsearch.js/es/middlewares";
-  import qs from "qs";
   import { replaceState } from "$app/navigation";
+  import { onDestroyClientSide } from "./utils";
+  import qs from "qs";
+  import { history } from "instantsearch.js/es/lib/routers";
   import { singleIndex } from "instantsearch.js/es/lib/stateMappings";
-  import { StateMapping } from "instantsearch.js";
 
   type $$Props = Omit<InstantSearchOptions, "searchFunction" | "insightsClients"> & {
     indexName: string;
@@ -22,8 +22,8 @@
   export let indexName: $$Props["indexName"];
   export let searchClient: $$Props["searchClient"];
   export let stalledSearchDelay: $$Props["stalledSearchDelay"] = undefined;
-  export let routing: $$Props["routing"] = undefined;
   export let onStateChange: $$Props["onStateChange"] = undefined;
+  export let routing: $$Props["routing"] = undefined;
   export let initialUiState: $$Props["initialUiState"] = undefined;
   export let insights: $$Props["insights"] = undefined;
   export let numberLocale: $$Props["numberLocale"] = undefined;
@@ -37,7 +37,7 @@
       read() {
         const url = new URL(window.location.href);
         const queryString = url.search.slice(1);
-        return qs.parse(queryString);
+        return qs.parse(queryString) as unknown as UiState;
       },
       write(routeState) {
         const url = new URL(window.location.href);
@@ -140,7 +140,12 @@
   }
 
   onDestroyClientSide(() => {
-    search.dispose();
+    if (search) {
+      if (removePopstateListener) {
+        removePopstateListener();
+      }
+      search.dispose();
+    }
   });
 </script>
 
