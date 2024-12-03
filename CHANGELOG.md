@@ -1,3 +1,7 @@
+## [1.0.1](https://github.com/aymeric-giraudet/svelte-algolia-instantsearch/compare/v1.0.0...v1.0.1) (2024-12-03)
+
+
+
 ## [0.12.1](https://github.com/aymeric-giraudet/svelte-algolia-instantsearch/compare/v0.12.0...v0.12.1) (2024-01-13)
 
 
