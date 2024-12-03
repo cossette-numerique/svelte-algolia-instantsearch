@@ -8,6 +8,11 @@
   import { page } from "$app/stores";
   import { setIndexContext } from "./indexContext";
   import { onDestroyClientSide } from "./utils";
+  import { RouterProps } from "instantsearch.js/es/middlewares";
+  import qs from "qs";
+  import { replaceState } from "$app/navigation";
+  import { singleIndex } from "instantsearch.js/es/lib/stateMappings";
+  import { StateMapping } from "instantsearch.js";
 
   type $$Props = Omit<InstantSearchOptions, "searchFunction" | "insightsClients"> & {
     indexName: string;
@@ -24,8 +29,79 @@
   export let numberLocale: $$Props["numberLocale"] = undefined;
 
   let search: InstantSearch;
-
   const serverContext = getServerContext();
+  let removePopstateListener: (() => void) | undefined;
+
+  const svelteKitRouter: RouterProps = {
+    router: {
+      read() {
+        const url = new URL(window.location.href);
+        const queryString = url.search.slice(1);
+        return qs.parse(queryString);
+      },
+      write(routeState) {
+        const url = new URL(window.location.href);
+        url.search = qs.stringify(routeState, { encode: true });
+        replaceState(url.toString(), {
+          algoliaState: routeState,
+        });
+      },
+      createURL(routeState) {
+        const url = new URL(window.location.href);
+        url.search = "";
+
+        Object.entries(routeState).forEach(([key, value]) => {
+          if (value !== undefined) {
+            url.searchParams.set(key, String(value));
+          }
+        });
+
+        return url.toString();
+      },
+      onUpdate(callback) {
+        if (typeof window !== "undefined") {
+          const popstateHandler = (event: PopStateEvent) => {
+            if (event.state?.algoliaState) {
+              callback(event.state.algoliaState);
+            }
+          };
+          window.addEventListener("popstate", popstateHandler);
+          removePopstateListener = () => {
+            window.removeEventListener("popstate", popstateHandler);
+          };
+        }
+        return removePopstateListener;
+      },
+      dispose() {
+        if (removePopstateListener) {
+          removePopstateListener();
+        }
+      },
+    },
+    stateMapping: singleIndex(indexName) as unknown as StateMapping,
+  };
+
+  const getSKRouting = () => {
+    if (typeof window === "undefined") {
+      return {
+        router: history({
+          getLocation() {
+            if (serverContext) {
+              return new URL(serverContext.serverUrl) as unknown as Location;
+            } else {
+              let serverUrl;
+              page.subscribe(({ url }) => {
+                serverUrl = url;
+              });
+              return new URL(serverUrl!) as unknown as Location;
+            }
+          },
+        }),
+      };
+    } else {
+      return svelteKitRouter;
+    }
+  };
 
   $: if (searchClient) {
     search = new InstantSearch({
@@ -36,24 +112,7 @@
       initialUiState,
       insights,
       numberLocale,
-      routing: routing && {
-        router: history({
-          getLocation() {
-            if (typeof window === "undefined") {
-              if (serverContext) {
-                return new URL(serverContext.serverUrl) as unknown as Location;
-              } else {
-                let serverUrl;
-                page.subscribe(({ url }) => {
-                  serverUrl = url;
-                });
-                return new URL(serverUrl!) as unknown as Location;
-              }
-            }
-            return window.location;
-          },
-        }),
-      },
+      routing: routing && getSKRouting(),
     });
 
     setInstantSearchContext(search);

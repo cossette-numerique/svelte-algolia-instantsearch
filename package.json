@@ -1,9 +1,12 @@
 {
-  "name": "svelte-algolia-instantsearch",
+  "name": "@valoche/svelte-algolia-instantsearch",
   "version": "0.12.1",
   "license": "MIT",
   "description": "Svelte wrapper for Algolia InstantSearch",
-  "repository": "aymeric-giraudet/svelte-algolia-instantsearch",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aymeric-giraudet/svelte-algolia-instantsearch.git"
+  },
   "keywords": [
     "svelte",
     "algolia",
@@ -24,13 +27,14 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test:unit": "vitest",
-    "lint": "prettier --plugin-search-dir . --check . && eslint .",
-    "format": "prettier --plugin-search-dir . --write .",
+    "lint": "eslint --max-warnings=0 .",
+    "format": "prettier --write .",
     "release": "shipjs prepare"
   },
   "dependencies": {
     "algoliasearch-helper": "3.14.0",
-    "instantsearch.js": "4.56.9"
+    "instantsearch.js": "4.56.9",
+    "qs": "^6.13.1"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "3.0.3",
@@ -41,7 +45,7 @@
     "algoliasearch": "4.19.1",
     "eslint": "8.48.0",
     "eslint-config-prettier": "9.0.0",
-    "eslint-plugin-svelte3": "4.0.0",
+    "eslint-plugin-svelte": "^2.46.1",
     "prettier": "3.0.3",
     "prettier-plugin-svelte": "3.0.3",
     "shipjs": "0.26.3",
@@ -53,9 +57,14 @@
     "vitest": "0.34.3"
   },
   "peerDependencies": {
+    "@sveltejs/kit": ">= 1 < 3",
     "algoliasearch": ">= 3.1 < 5",
-    "svelte": ">= 3 < 5",
-    "@sveltejs/kit": ">= 1 < 3"
+    "svelte": ">= 3 < 5"
   },
-  "type": "module"
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/aymeric-giraudet/svelte-algolia-instantsearch/issues"
+  },
+  "homepage": "https://github.com/aymeric-giraudet/svelte-algolia-instantsearch#readme",
+  "author": "valoche"
 }
