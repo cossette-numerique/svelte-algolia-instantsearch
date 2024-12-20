@@ -42,6 +42,11 @@
       write(routeState) {
         const url = new URL(window.location.href);
         url.search = stringify(routeState, { encode: true });
+        return parse(queryString) as unknown as UiState;
+      },
+      write(routeState) {
+        const url = new URL(window.location.href);
+        url.search = stringify(routeState, { encode: true });
         replaceState(url.toString(), {
           algoliaState: routeState,
         });
