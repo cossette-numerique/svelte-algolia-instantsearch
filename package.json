@@ -1,5 +1,5 @@
 {
-  "name": "svelte-algolia-instantsearch",
+  "name": "cossette-svelte-algolia-instantsearch",
   "version": "0.0.3",
   "license": "MIT",
   "description": "Svelte wrapper for Algolia InstantSearch",
