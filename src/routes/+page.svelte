@@ -110,8 +110,10 @@
       </div>
 
       <Hits let:hit>
-        <Highlight attribute="name" classes={{ root: "Hit-label" }} {hit} />
-        <span class="Hit-price">${hit.price}</span>
+        <a href="/test">
+          <Highlight attribute="name" classes={{ root: "Hit-label" }} {hit} />
+          <span class="Hit-price">${hit.price}</span>
+        </a>
       </Hits>
 
       <Pagination />
